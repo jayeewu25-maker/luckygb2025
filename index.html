@@ -3,42 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>幸運大轉盤 (KV 版)</title>
+  <title>幸運大轉盤（Cloudflare KV 版）</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', 'Noto Sans TC', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-    .input-field { box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); appearance: none; border: 2px solid #334155; border-radius: 0.5rem; width: 100%; padding: 0.75rem 1rem; background-color: #0f172a; color: #f1f5f9; line-height: 1.25; transition: all 0.2s; }
-    .input-field:focus { outline: none; box-shadow: 0 0 0 3px #fbbf2466; border-color: #fbbf24;}
-    .btn-primary { background-color: #fbbf24; color: #1e293b; font-weight: bold; border-radius: 0.5rem; transition: background-color 0.3s, transform 0.1s; }
-    .btn-primary:hover { background-color: #fcd34d; }
-    .btn-primary:active { transform: scale(0.98); }
-    .t-colors { transition: all 0.2s; }
-    .tab-active { color: #fbbf24; border-bottom: 2px solid #fbbf24; }
-    .tab-inactive { color: #94a3b8; border-color: transparent; }
-    .tab-inactive:hover { color: white; }
-    .btn-export { text-align: center; padding: 0.5rem 0.75rem; background-color: #059669; border-radius: 0.5rem; transition: background-color 0.2s; font-size: 0.875rem; }
-    .btn-export:hover { background-color: #047857; }
-    .animate-fade-in-up { animation: fade-in-up 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
-    @keyframes fade-in-up { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    body { font-family: 'Inter','Noto Sans TC',sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .input-field { box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); appearance: none; border: 2px solid #334155; border-radius: .5rem; width: 100%; padding: .75rem 1rem; background:#0f172a; color:#f1f5f9; line-height:1.25; transition:.2s; }
+    .input-field:focus { outline: none; box-shadow: 0 0 0 3px #fbbf2466; border-color:#fbbf24; }
+    .btn-primary { background:#fbbf24; color:#1e293b; font-weight:bold; border-radius:.5rem; transition:.3s; }
+    .btn-primary:hover { background:#fcd34d; }
+    .btn-primary:active { transform: scale(.98); }
+    .t-colors { transition:.2s; }
+    .tab-active { color:#fbbf24; border-bottom:2px solid #fbbf24; }
+    .tab-inactive { color:#94a3b8; border-color:transparent; }
+    .tab-inactive:hover { color:#fff; }
+    .btn-export { text-align:center; padding:.5rem .75rem; background:#059669; border-radius:.5rem; transition:.2s; font-size:.875rem; }
+    .btn-export:hover { background:#047857; }
+    .animate-fade-in-up { animation: fade-in-up .5s cubic-bezier(.25,.46,.45,.94) both; }
+    @keyframes fade-in-up { 0% { opacity:0; transform: translateY(20px);} 100% { opacity:1; transform: translateY(0);} }
+    .no-scrollbar::-webkit-scrollbar { display:none; }
+    .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
   </style>
 </head>
-<body class="bg-slate-900 text-white">
+<body class="bg-slate-900 text-white font-sans">
 
   <!-- Toast -->
   <div id="toast-notification" class="fixed top-5 right-5 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 translate-x-[120%] transition-transform duration-300">
     <p id="toast-message"></p>
   </div>
 
-  <!-- 載入畫面 -->
+  <!-- 全螢幕載入畫面 -->
   <div id="loading-screen" class="fixed inset-0 bg-slate-900 z-50 flex flex-col items-center justify-center text-center p-4">
-    <svg class="animate-spin h-10 w-10 text-amber-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    <svg class="animate-spin h-10 w-10 text-amber-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
     <p id="loading-text" class="text-xl text-slate-300">正在連線至伺服器…</p>
   </div>
 
-  <!-- 登入 -->
+  <!-- 登入畫面 -->
   <div id="auth-screen" class="min-h-screen w-full flex-col items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm">
       <form id="auth-form" class="bg-slate-800 shadow-2xl rounded-2xl px-8 pt-10 pb-8 mb-4">
@@ -60,9 +63,9 @@
     </div>
   </div>
 
-  <!-- App -->
+  <!-- 主應用程式畫面 -->
   <div id="app-screen" class="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden hidden">
-    <!-- 結果 -->
+    <!-- 結果彈窗 -->
     <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
       <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 m-4 text-center animate-fade-in-up">
         <h2 id="result-participant" class="text-2xl font-bold text-slate-300 mb-2"></h2>
@@ -71,8 +74,8 @@
       </div>
     </div>
 
-    <!-- 確認 -->
-    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify中心 z-50 hidden">
+    <!-- 確認彈窗 -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
       <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 m-4 text-center animate-fade-in-up max-w-sm">
         <h2 class="text-xl font-bold text-slate-200 mb-4">請確認</h2>
         <p id="confirm-message" class="text-slate-400 mb-6"></p>
@@ -83,8 +86,8 @@
       </div>
     </div>
 
-    <!-- 員工管理 -->
-    <div id="db-modal" class="fixed inset-0 bg黑 bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <!-- 員工管理視窗 -->
+    <div id="db-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
       <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 m-4 w-full max-w-3xl flex flex-col max-h-[90vh]">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-2xl font-bold text-amber-400">管理員工名單</h2>
@@ -118,13 +121,13 @@
       </div>
     </div>
 
-    <!-- 頂部條 -->
+    <!-- 右上角資訊 -->
     <div class="absolute top-4 right-4 text-right z-10">
       <p class="text-slate-300">歡迎, <span id="current-participant" class="font-bold text-amber-400"></span></p>
       <button id="logout-btn" class="text-sm text-slate-400 hover:text-white underline">登出</button>
     </div>
 
-    <!-- 主區域 -->
+    <!-- 主畫面內容 -->
     <main class="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8">
       <div id="wheel-section" class="lg:col-span-5 flex flex-col items-center justify-center space-y-8 py-8">
         <h1 class="text-4xl sm:text-5xl font-black text-center tracking-tight">幸運大轉盤</h1>
@@ -183,24 +186,27 @@
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const API_BASE = ''; // 與同一 Pages 專案可留空
+    // 與同一 Pages 專案即可留空
+    const API_BASE = '';
 
-    // --- 預設資料（伺服器若尚未有 state 時使用） ---
+    // 預設資料（當 KV 尚未初始化時由 server 端 /api/state 回傳 defaults，或首次存入）
     const DEFAULT_EMPLOYEES = [
-      { empId: 'EMP001', pmtId: 'A123456781' }, { empId: 'EMP002', pmtId: 'A123456782' },
-      { empId: 'EMP003', pmtId: 'A123456783' }, { empId: 'EMP004', pmtId: 'A123456784' },
+      { empId: 'EMP001', pmtId: 'A123456781' },
+      { empId: 'EMP002', pmtId: 'A123456782' },
+      { empId: 'EMP003', pmtId: 'A123456783' },
+      { empId: 'EMP004', pmtId: 'A123456784' },
       { empId: 'EMP005', pmtId: 'A123456785' },
     ];
     const DEFAULT_PRIZES = [
-      { id: 1, label: "特獎", color: "#FBBF24", weight: 1, remaining: 1, defaultRemaining: 1 },
-      { id: 2, label: "頭獎", color: "#F87171", weight: 2, remaining: 2, defaultRemaining: 2 },
-      { id: 3, label: "二獎", color: "#34D399", weight: 3, remaining: 3, defaultRemaining: 3 },
-      { id: 4, label: "三獎", color: "#60A5FA", weight: 4, remaining: 5, defaultRemaining: 5 },
-      { id: 5, label: "再接再厲", color: "#A78BFA", weight: 5, remaining: 10, defaultRemaining: 10 },
-      { id: 6, label: "銘謝惠顧", color: "#9CA3AF", weight: 8, remaining: 20, defaultRemaining: 20 },
+      { id: 1, label: "特獎", color: "#FBBF24", weight: 1,  remaining: 1,  defaultRemaining: 1 },
+      { id: 2, label: "頭獎", color: "#F87171", weight: 2,  remaining: 2,  defaultRemaining: 2 },
+      { id: 3, label: "二獎", color: "#34D399", weight: 3,  remaining: 3,  defaultRemaining: 3 },
+      { id: 4, label: "三獎", color: "#60A5FA", weight: 4,  remaining: 5,  defaultRemaining: 5 },
+      { id: 5, label: "再接再厲", color: "#A78BFA", weight: 5,  remaining: 10, defaultRemaining: 10 },
+      { id: 6, label: "銘謝惠顧", color: "#9CA3AF", weight: 8,  remaining: 20, defaultRemaining: 20 },
     ];
 
-    // --- 狀態 ---
+    // 應用狀態
     let state = {
       prizes: [],
       logs: [],
@@ -212,23 +218,23 @@
       activeTab: 'prizes',
     };
 
-    // --- API ---
+    // API --------------------------------------------------------------------
     async function apiGetState() {
       const res = await fetch(`${API_BASE}/api/state`, { cache: 'no-store' });
-      if (!res.ok) throw new Error('無法讀取狀態');
+      if (!res.ok) throw new Error('讀取狀態失敗');
       const data = await res.json();
       if (!data || !data.prizes) {
         const initial = {
-          prizes: DEFAULT_PRIZES.sort((a,b)=>a.id-b.id),
+          prizes: DEFAULT_PRIZES.slice().sort((a,b)=>a.id-b.id),
           logs: [],
           usedIds: [],
-          employees: DEFAULT_EMPLOYEES,
+          employees: DEFAULT_EMPLOYEES.slice(),
         };
         await apiSaveState(initial);
         return initial;
       }
       return {
-        prizes: (data.prizes || []).sort((a,b)=>a.id-b.id),
+        prizes: (data.prizes || []).slice().sort((a,b)=>a.id-b.id),
         logs: data.logs || [],
         usedIds: data.usedIds || [],
         employees: data.employees || [],
@@ -246,49 +252,58 @@
     async function apiSpin(participant) {
       const res = await fetch(`${API_BASE}/api/spin`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type':'application/json' },
         body: JSON.stringify({ participant }),
       });
       if (!res.ok) throw new Error('抽獎失敗');
-      return await res.json(); // { ok, picked? }
+      return await res.json(); // { ok:true, picked:{...} }
     }
 
     async function apiReset(op) {
       const res = await fetch(`${API_BASE}/api/reset`, {
-        method: 'POST',
-        headers: { 'content-type':'application/json' },
-        body: JSON.stringify({ op, adminToken: '2025' }),
+        method:'POST',
+        headers:{ 'content-type':'application/json' },
+        body: JSON.stringify({ op, adminToken:'2025' }),
       });
       if (!res.ok) throw new Error('重置失敗');
     }
 
-    // --- DOM 快取 ---
-    const $ = (s) => document.querySelector(s);
-    const $$ = (s) => document.querySelectorAll(s);
+    // DOM --------------------------------------------------------------------
+    const $  = (s)=>document.querySelector(s);
+    const $$ = (s)=>document.querySelectorAll(s);
+
     const loadingScreen = $('#loading-screen');
     const authScreen = $('#auth-screen');
     const appScreen = $('#app-screen');
+
     const authForm = $('#auth-form');
     const employeeIdInput = $('#employeeId');
     const permitIdInput = $('#permitId');
     const authError = $('#auth-error');
     const currentParticipantSpan = $('#current-participant');
     const logoutBtn = $('#logout-btn');
+
     const wheel = $('#wheel');
     const wheelSvg = $('#wheel-svg');
     const spinCenterBtn = $('#spin-center-btn');
     const spinMainBtn = $('#spin-main-btn');
+
     const resultModal = $('#result-modal');
     const resultParticipant = $('#result-participant');
     const resultPrize = $('#result-prize');
+
     const confirmModal = $('#confirm-modal');
     const confirmMessage = $('#confirm-message');
     const confirmOkBtn = $('#confirm-ok-btn');
     const confirmCancelBtn = $('#confirm-cancel-btn');
+
     const adminPanel = $('#admin-panel');
     const wheelSection = $('#wheel-section');
 
-    // --- SVG 輔助 ---
+    const toastEl = $('#toast-notification');
+    const toastMsg = $('#toast-message');
+
+    // SVG 輔助 ---------------------------------------------------------------
     const polarToCartesian = (cx, cy, r, angle) => {
       const rad = ((angle - 90) * Math.PI) / 180.0;
       return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
@@ -300,19 +315,18 @@
       return ['M', start[0], start[1], 'A', r, r, 0, flag, 0, end[0], end[1], 'L', x, y, 'Z'].join(' ');
     };
 
-    // --- Toast ---
-    const toastEl = $('#toast-notification');
-    const toastMsg = $('#toast-message');
-    function showToast(message, isError = false) {
+    // UI & 渲染 --------------------------------------------------------------
+    function showToast(message, isError=false){
       toastMsg.textContent = message;
-      toastEl.className = `fixed top-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-transform duration-300 ${isError ? 'bg-red-600' : 'bg-emerald-500'}`;
+      toastEl.className = `fixed top-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-transform duration-300 ${isError?'bg-red-600':'bg-emerald-500'}`;
       toastEl.classList.remove('translate-x-[120%]');
-      setTimeout(() => toastEl.classList.add('translate-x-[120%]'), 3000);
+      setTimeout(()=>toastEl.classList.add('translate-x-[120%]'), 3000);
     }
 
-    // --- UI ---
-    function renderWheel() {
+    function renderWheel(){
       wheelSvg.innerHTML = '';
+      if (!state.prizes || state.prizes.length===0) return;
+
       const size = 400, radius = size/2;
       const sectors = state.prizes.length;
       const arc = sectors > 0 ? 360 / sectors : 0;
@@ -361,9 +375,11 @@
       wheelSvg.appendChild(g);
     }
 
-    function renderPrizesTab() {
-      const container = $('#tab-prizes'); container.innerHTML = '';
-      state.prizes.forEach((p, i) => {
+    function renderPrizesTab(){
+      const container = $('#tab-prizes');
+      if (!container) return;
+      container.innerHTML = '';
+      state.prizes.forEach((p,i)=>{
         const el = document.createElement('div');
         el.className = 'grid grid-cols-6 gap-2 items-center bg-slate-700/50 p-2 rounded-lg';
         el.innerHTML = `
@@ -377,34 +393,39 @@
           <div class="col-span-2 text-right">
             <span>剩餘: </span>
             <input type="number" min="0" value="${p.remaining}" data-index="${i}" data-field="remaining" class="prize-input bg-slate-800 w-12 text-center rounded focus:outline-none focus:ring-1 focus:ring-amber-500"/>
-          </div>`;
+          </div>
+        `;
         container.appendChild(el);
       });
     }
 
-    function renderLogsTab() {
-      const container = $('#tab-logs'); container.innerHTML = '';
-      if (state.logs.length === 0) {
+    function renderLogsTab(){
+      const container = $('#tab-logs');
+      if (!container) return;
+      container.innerHTML = '';
+      if ((state.logs||[]).length===0){
         container.innerHTML = `<p class="text-slate-500 text-center pt-8">目前沒有抽獎紀錄。</p>`;
         return;
       }
-      [...state.logs].reverse().forEach(log => {
+      [...state.logs].reverse().forEach(log=>{
         const el = document.createElement('div');
         el.className = 'flex justify-between bg-slate-700/50 p-2 rounded-lg';
         el.innerHTML = `
           <span class="font-mono text-slate-400">${log.employeeId}</span>
           <span class="font-semibold">${log.prize}</span>
-          <span class="text-slate-500">${new Date(log.ts).toLocaleTimeString()}</span>`;
+          <span class="text-slate-500">${new Date(log.ts).toLocaleTimeString()}</span>
+        `;
         container.appendChild(el);
       });
     }
 
-    function renderEmployeeList() {
+    function renderEmployeeList(){
       const container = $('#employee-list');
       const title = $('#employee-list-title');
+      if (!container || !title) return;
       container.innerHTML = '';
       title.textContent = `現有名單 (${state.employees.length}人)`;
-      state.employees.forEach(({empId, pmtId}) => {
+      state.employees.forEach(({empId,pmtId})=>{
         const el = document.createElement('div');
         el.className = 'flex justify-between items-center bg-slate-700/50 p-2 rounded-lg text-sm';
         el.innerHTML = `
@@ -412,58 +433,74 @@
             <span class="text-slate-300">${empId}</span>
             <span class="text-slate-500 ml-3">${pmtId}</span>
           </div>
-          <button data-empid="${empId}" class="delete-employee-btn text-red-500 hover:text-red-400 text-xs px-2 py-1 rounded bg-red-900/50">刪除</button>`;
+          <button data-empid="${empId}" class="delete-employee-btn text-red-500 hover:text-red-400 text-xs px-2 py-1 rounded bg-red-900/50">刪除</button>
+        `;
         container.appendChild(el);
       });
     }
 
-    function renderAdminPanel() {
+    function renderAdminPanel(){
       renderPrizesTab();
       renderLogsTab();
       switchTab(state.activeTab);
     }
 
-    function updateUI() {
-      const isAdmin = state.currentParticipant === "系統管理員";
-      const activePrizes = state.prizes.filter(p => p.remaining > 0);
+    function updateUI(){
+      const isAdmin = state.currentParticipant === '系統管理員';
+      const activePrizes = state.prizes.filter(p=>p.remaining>0);
 
-      if (state.currentParticipant) {
-        authScreen.classList.add('hidden'); authScreen.classList.remove('flex');
+      if (state.currentParticipant){
+        authScreen.classList.add('hidden');
+        authScreen.classList.remove('flex');
         appScreen.classList.remove('hidden');
         currentParticipantSpan.textContent = state.currentParticipant;
-      } else {
-        authScreen.classList.remove('hidden'); authScreen.classList.add('flex');
+      }else{
+        authScreen.classList.remove('hidden');
+        authScreen.classList.add('flex');
         appScreen.classList.add('hidden');
         return;
       }
 
-      if (isAdmin) {
+      if (isAdmin){
         wheelSection.className = "lg:col-span-3 flex flex-col items-center justify-center space-y-8 py-8";
-        adminPanel.classList.remove('hidden'); adminPanel.classList.add('flex');
-      } else {
+        adminPanel.classList.remove('hidden');
+        adminPanel.classList.add('flex');
+      }else{
         wheelSection.className = "lg:col-span-5 flex flex-col items-center justify-center space-y-8 py-8";
-        adminPanel.classList.add('hidden'); adminPanel.classList.remove('flex');
+        adminPanel.classList.add('hidden');
+        adminPanel.classList.remove('flex');
       }
 
-      const spinDisabled = state.spinning || activePrizes.length === 0;
-      [spinCenterBtn, spinMainBtn].forEach(btn => btn.disabled = spinDisabled);
-      if (activePrizes.length === 0) spinMainBtn.textContent = "獎品已抽完";
-      else if (state.spinning)   spinMainBtn.textContent = "轉動中...";
-      else                       spinMainBtn.textContent = "開始抽獎！";
+      const spinDisabled = state.spinning || activePrizes.length===0;
+      [spinCenterBtn, spinMainBtn].forEach(btn=>btn.disabled=spinDisabled);
+      if (activePrizes.length===0)      spinMainBtn.textContent = "獎品已抽完";
+      else if (state.spinning)          spinMainBtn.textContent = "轉動中...";
+      else                              spinMainBtn.textContent = "開始抽獎！";
 
       renderWheel();
       if (isAdmin) renderAdminPanel();
     }
 
-    // --- 互動 ---
-    async function handleSpin() {
+    // 邏輯 -------------------------------------------------------------------
+    function weightedPick(items){
+      const total = items.reduce((sum,p)=>sum+(Number(p.weight)||0),0);
+      if (total<=0) return items[Math.floor(Math.random()*items.length)];
+      let r = Math.random()*total;
+      for (const p of items){
+        r -= Number(p.weight)||0;
+        if(r<=0) return p;
+      }
+      return items[items.length-1];
+    }
+
+    async function handleSpin(){
       if (state.spinning || !state.currentParticipant) return;
 
       state.spinning = true;
       updateUI();
 
       const resp = await apiSpin(state.currentParticipant);
-      if (!resp.ok) {
+      if (!resp.ok){
         state.spinning = false;
         updateUI();
         showConfirmationModal("所有獎品均已抽完！", ()=>{});
@@ -474,21 +511,21 @@
       state = { ...state, ...serverState };
 
       const picked = resp.picked;
-      const pickedIndex = state.prizes.findIndex(p => p.id === picked.id);
+      const pickedIndex = state.prizes.findIndex(p=>p.id===picked.id);
       const sectors = state.prizes.length;
-      const arc = sectors > 0 ? 360 / sectors : 0;
-      const sectorCenter = pickedIndex * arc + arc / 2;
+      const arc = sectors>0 ? 360/sectors : 0;
+      const sectorCenter = pickedIndex*arc + arc/2;
       const targetStopAngle = 360 - sectorCenter;
       const currentVisualAngle = state.angle % 360;
       const requiredRotation = (targetStopAngle - currentVisualAngle + 360) % 360;
       const extraSpins = 8;
       const randomOffset = (Math.random() - 0.5) * arc * 0.8;
-      const totalRotationToAdd = (extraSpins * 360) + requiredRotation + randomOffset;
+      const totalRotationToAdd = (extraSpins*360) + requiredRotation + randomOffset;
 
       state.angle += totalRotationToAdd;
       wheel.style.transform = `rotate(${state.angle}deg)`;
 
-      const handleSpinEnd = async () => {
+      const handleSpinEnd = async ()=>{
         wheel.removeEventListener('transitionend', handleSpinEnd);
         state.spinning = false;
 
@@ -498,7 +535,7 @@
         resultPrize.style.color = '#111827';
         resultModal.classList.remove('hidden');
 
-        setTimeout(async () => {
+        setTimeout(async ()=>{
           resultModal.classList.add('hidden');
           state.currentParticipant = null;
           const s2 = await apiGetState();
@@ -506,62 +543,73 @@
           updateUI();
         }, 3000);
       };
-      wheel.addEventListener('transitionend', handleSpinEnd, { once: true });
+      wheel.addEventListener('transitionend', handleSpinEnd, { once:true });
     }
 
-    function showConfirmationModal(message, onConfirm) {
+    function showConfirmationModal(message, onConfirm){
       confirmMessage.textContent = message;
       confirmModal.classList.remove('hidden');
-      confirmCallback = onConfirm;
+      confirmOkBtn.onclick = ()=>{
+        confirmModal.classList.add('hidden');
+        onConfirm && onConfirm();
+      };
+      confirmCancelBtn.onclick = ()=>{
+        confirmModal.classList.add('hidden');
+      };
     }
 
-    function showDbMessage(text, isError = false) {
-      const msgEl = $('#db-message');
-      msgEl.textContent = text;
-      msgEl.style.color = isError ? '#f87171' : '#34d399';
-      setTimeout(() => msgEl.textContent = '', 3000);
-    }
-
-    async function syncAndRefresh() {
-      const s = await apiGetState();
-      state = { ...state, ...s };
-      updateUI();
-    }
-
-    // --- 事件 ---
-    authForm.addEventListener('submit', async (e) => {
+    // 事件 -------------------------------------------------------------------
+    authForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
       const empId = employeeIdInput.value.trim();
       const pmtId = permitIdInput.value.trim();
-      const adminPassword = "2025";
-      authError.textContent = "";
+      const adminPassword = '2025';
+      authError.textContent = '';
 
-      if (empId === adminPassword) {
-        state.currentParticipant = "系統管理員";
-        employeeIdInput.value = ""; permitIdInput.value = "";
+      if (empId === adminPassword){
+        state.currentParticipant = '系統管理員';
+        employeeIdInput.value=''; permitIdInput.value='';
         state.activeTab = 'settings';
         updateUI();
         return;
       }
-      if (!empId || !pmtId) { authError.textContent = "工號與居留證號皆不能為空。"; return; }
+      if (!empId || !pmtId){ authError.textContent = '工號與居留證號皆不能為空。'; return; }
 
       const s = await apiGetState();
-      const user = (s.employees || []).find(u => u.empId.toUpperCase() === empId.toUpperCase() && u.pmtId.toUpperCase() === pmtId.toUpperCase());
-      if (!user) { authError.textContent = "工號或居留證號驗證失敗。"; return; }
-      if ((s.usedIds || []).map(id => id.toUpperCase()).includes(user.empId.toUpperCase())) { authError.textContent = "此工號已抽過獎，無法重複參加。"; return; }
+      const user = (s.employees||[]).find(u=>u.empId.toUpperCase()===empId.toUpperCase() && u.pmtId.toUpperCase()===pmtId.toUpperCase());
+      if (!user){ authError.textContent='工號或居留證號驗證失敗。'; return; }
+      if ((s.usedIds||[]).map(id=>id.toUpperCase()).includes(user.empId.toUpperCase())){ authError.textContent='此工號已抽過獎，無法重複參加。'; return; }
 
       state.currentParticipant = user.empId;
-      employeeIdInput.value = ""; permitIdInput.value = "";
+      employeeIdInput.value=''; permitIdInput.value='';
       updateUI();
     });
 
-    logoutBtn.addEventListener('click', () => { state.currentParticipant = null; updateUI(); });
-    [spinCenterBtn, spinMainBtn].forEach(btn => btn.addEventListener('click', () => handleSpin()));
+    logoutBtn.addEventListener('click', ()=>{ state.currentParticipant=null; updateUI(); });
+    [spinCenterBtn, spinMainBtn].forEach(btn=>btn.addEventListener('click', handleSpin));
 
-    $$('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+    $$('.tab-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+    });
 
-    // 獎品欄位變更 → 寫回 KV
-    $('#tab-prizes').addEventListener('change', async (e) => {
+    function switchTab(tabName){
+      state.activeTab = tabName;
+      $$('.tab-content').forEach(el=>el.classList.add('hidden'));
+      $$('.tab-btn').forEach(el=>{
+        el.classList.remove('tab-active');
+        el.classList.add('tab-inactive');
+      });
+      const tabEl = document.querySelector(`#tab-${tabName}`);
+      if (tabEl) tabEl.classList.remove('hidden');
+      const btnEl = document.querySelector(`[data-tab="${tabName}"]`);
+      if (btnEl){
+        btnEl.classList.add('tab-active');
+        btnEl.classList.remove('tab-inactive');
+      }
+    }
+
+    // 管理：獎品編輯 → 直接寫回 KV
+    document.addEventListener('change', async (e)=>{
       if (!e.target.classList.contains('prize-input')) return;
       const { index, field } = e.target.dataset;
       const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
@@ -573,158 +621,169 @@
       showToast('已更新獎品設定');
     });
 
-    // 重設剩餘
-    $('#reset-remaining-btn').addEventListener('click', () => {
-      showConfirmationModal("您確定要重設所有獎品的剩餘數量嗎？", async () => {
-        await apiReset('reset-remaining');
-        await syncAndRefresh();
-        showToast("獎品剩餘數量已重設。");
+    // 重設剩餘數量
+    const resetRemainingBtn = document.querySelector('#reset-remaining-btn');
+    if (resetRemainingBtn){
+      resetRemainingBtn.addEventListener('click', ()=>{
+        showConfirmationModal('您確定要重設所有獎品的剩餘數量嗎？', async ()=>{
+          await apiReset('reset-remaining');
+          const s = await apiGetState();
+          state = { ...state, ...s };
+          updateUI();
+          showToast('獎品剩餘數量已重設。');
+        });
       });
-    });
+    }
 
     // 重設所有資料（保留名單）
-    $('#reset-all-btn').addEventListener('click', () => {
-      showConfirmationModal("警告：此操作將會清空所有抽獎紀錄和已用工號，您確定嗎？(員工名單將保留)", async () => {
-        await apiReset('reset-all');
-        await syncAndRefresh();
-        showToast("所有抽獎紀錄已重設。");
+    const resetAllBtn = document.querySelector('#reset-all-btn');
+    if (resetAllBtn){
+      resetAllBtn.addEventListener('click', ()=>{
+        showConfirmationModal('警告：此操作將會清空所有抽獎紀錄和已用工號，您確定嗎？(員工名單將保留)', async ()=>{
+          await apiReset('reset-all');
+          const s = await apiGetState();
+          state = { ...state, ...s };
+          updateUI();
+          showToast('所有抽獎紀錄已重設。');
+        });
       });
-    });
+    }
 
-    // 員工名單 UI
-    $('#manage-employees-btn').addEventListener('click', async () => {
+    // 員工管理
+    const manageBtn = document.querySelector('#manage-employees-btn');
+    const dbModal = document.querySelector('#db-modal');
+    const dbMsg = document.querySelector('#db-message');
+
+    function showDbMessage(msg, isError=false){
+      if (!dbMsg) return;
+      dbMsg.textContent = msg;
+      dbMsg.style.color = isError ? '#f87171' : '#34d399';
+      setTimeout(()=> dbMsg.textContent='', 3000);
+    }
+
+    if (manageBtn){
+      manageBtn.addEventListener('click', async ()=>{
+        const s = await apiGetState();
+        state = { ...state, ...s };
+        renderEmployeeList();
+        dbModal?.classList.remove('hidden');
+      });
+    }
+    document.querySelector('#close-db-modal')?.addEventListener('click', ()=> dbModal?.classList.add('hidden'));
+
+    document.querySelector('#add-employee-btn')?.addEventListener('click', async ()=>{
+      const empId = document.querySelector('#new-employee-id').value.trim();
+      const pmtId = document.querySelector('#new-permit-id').value.trim();
+      if (!empId || !pmtId){ showDbMessage('工號和居留證號不能為空。', true); return; }
       const s = await apiGetState();
-      state = { ...state, ...s };
-      renderEmployeeList();
-      $('#db-modal').classList.remove('hidden');
-    });
-    $('#close-db-modal').addEventListener('click', () => $('#db-modal').classList.add('hidden'));
-
-    $('#add-employee-btn').addEventListener('click', async () => {
-      const empId = $('#new-employee-id').value.trim();
-      const pmtId = $('#new-permit-id').value.trim();
-      if (!empId || !pmtId) { showDbMessage('工號和居留證號不能為空。', true); return; }
-
-      const s = await apiGetState();
-      if (s.employees.some(e => e.empId.toUpperCase() === empId.toUpperCase())) { showDbMessage('此工號已存在。', true); return; }
+      if (s.employees.some(e=>e.empId.toUpperCase()===empId.toUpperCase())){ showDbMessage('此工號已存在。', true); return; }
       s.employees.push({ empId, pmtId });
       await apiSaveState(s);
       state = { ...state, ...s };
       renderEmployeeList();
       showDbMessage(`成功新增工號：${empId}`);
-      $('#new-employee-id').value = ''; $('#new-permit-id').value = '';
+      document.querySelector('#new-employee-id').value='';
+      document.querySelector('#new-permit-id').value='';
     });
 
-    $('#batch-add-btn').addEventListener('click', async () => {
-      const batchInput = $('#batch-input').value;
+    document.querySelector('#batch-add-btn')?.addEventListener('click', async ()=>{
+      const batchInput = (document.querySelector('#batch-input').value||'');
       const s = await apiGetState();
-      const existing = new Set(s.employees.map(e => e.empId.toUpperCase()));
+      const existing = new Set(s.employees.map(e=>e.empId.toUpperCase()));
       const toAdd = batchInput.split('\n')
-        .map(line => line.split(/[,，\s]+/).map(t => t.trim()))
-        .filter(parts => parts.length === 2 && parts[0] && parts[1])
-        .map(([empId, pmtId]) => ({ empId, pmtId }))
-        .filter(e => !existing.has(e.empId.toUpperCase()));
-
-      if (toAdd.length === 0) { showDbMessage('沒有可新增的資料，請檢查格式或是否重複。', true); return; }
+        .map(line=>line.split(/[,，\s]+/).map(t=>t.trim()))
+        .filter(parts=>parts.length===2 && parts[0] && parts[1])
+        .map(([empId,pmtId])=>({ empId,pmtId }))
+        .filter(e=>!existing.has(e.empId.toUpperCase()));
+      if (toAdd.length===0){ showDbMessage('沒有可新增的資料，請檢查格式或是否重複。', true); return; }
       s.employees = [...s.employees, ...toAdd];
       await apiSaveState(s);
       state = { ...state, ...s };
       renderEmployeeList();
       showDbMessage(`成功批量新增 ${toAdd.length} 筆資料。`);
-      $('#batch-input').value = '';
+      document.querySelector('#batch-input').value='';
     });
 
-    $('#employee-list').addEventListener('click', async (e) => {
-      if (!e.target.classList.contains('delete-employee-btn')) return;
-      const empIdToDelete = e.target.dataset.empid;
+    document.querySelector('#employee-list')?.addEventListener('click', async (e)=>{
+      const target = e.target;
+      if (!target.classList.contains('delete-employee-btn')) return;
+      const empIdToDelete = target.dataset.empid;
       const s = await apiGetState();
-      s.employees = s.employees.filter(u => u.empId.toUpperCase() !== empIdToDelete.toUpperCase());
+      s.employees = s.employees.filter(u=>u.empId.toUpperCase()!==empIdToDelete.toUpperCase());
       await apiSaveState(s);
       state = { ...state, ...s };
       renderEmployeeList();
       showDbMessage(`已刪除工號：${empIdToDelete}`);
     });
 
-    $('#delete-all-employees-btn').addEventListener('click', () => {
-      showConfirmationModal("您確定要刪除所有員工名單嗎？此操作無法復原。", async () => {
+    document.querySelector('#delete-all-employees-btn')?.addEventListener('click', ()=>{
+      showConfirmationModal('您確定要刪除所有員工名單嗎？此操作無法復原。', async ()=>{
         const s = await apiGetState();
         s.employees = [];
         await apiSaveState(s);
         state = { ...state, ...s };
         renderEmployeeList();
-        showToast("所有員工名單已被刪除。");
+        showToast('所有員工名單已被刪除。');
       });
     });
 
-    // 匯出
-    function downloadCSV(content, fileName) {
-      const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
+    // 匯出 CSV
+    function downloadCSV(content, fileName){
+      const blob = new Blob([content], { type:'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
-      link.href = url; link.download = fileName; link.style.visibility = 'hidden';
+      const link = document.createElement('a');
+      link.href = url; link.download = fileName; link.style.visibility='hidden';
       document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
-    $('#export-history-btn').addEventListener('click', async () => {
+    document.querySelector('#export-history-btn')?.addEventListener('click', async ()=>{
       const s = await apiGetState();
       let csv = "\uFEFF";
       csv += "抽獎時間,員工工號,獎品名稱\n";
-      s.logs.forEach(log => { csv += `${new Date(log.ts).toLocaleString('zh-TW')},${log.employeeId},${log.prize}\n`; });
+      s.logs.forEach(log=>{
+        csv += `${new Date(log.ts).toLocaleString('zh-TW')},${log.employeeId},${log.prize}\n`;
+      });
       downloadCSV(csv, '抽獎紀錄.csv');
     });
 
-    $('#export-winners-btn').addEventListener('click', async () => {
+    document.querySelector('#export-winners-btn')?.addEventListener('click', async ()=>{
       const s = await apiGetState();
-      const actual = s.logs.filter(l => l.prize !== "銘謝惠顧");
-      const ids = [...new Set(actual.map(l => l.employeeId))];
+      const actual = s.logs.filter(l=>l.prize!=="銘謝惠顧");
+      const ids = [...new Set(actual.map(l=>l.employeeId))];
       let csv = "\uFEFF";
       csv += "已中獎員工工號 (不含銘謝惠顧)\n";
-      ids.forEach(id => { csv += `${id}\n`; });
+      ids.forEach(id=>{ csv += `${id}\n`; });
       downloadCSV(csv, '已中獎名單.csv');
     });
 
-    $('#export-unfilled-btn').addEventListener('click', async () => {
+    document.querySelector('#export-unfilled-btn')?.addEventListener('click', async ()=>{
       const s = await apiGetState();
-      const winnersSet = new Set(s.usedIds.map(id => id.toUpperCase()));
-      const unfilled = s.employees.filter(u => !winnersSet.has(u.empId.toUpperCase()));
+      const winnersSet = new Set(s.usedIds.map(id=>id.toUpperCase()));
+      const unfilled = s.employees.filter(u=>!winnersSet.has(u.empId.toUpperCase()));
       let csv = "\uFEFF";
       csv += "未抽獎員工工號,居留證號\n";
-      unfilled.forEach(u => { csv += `${u.empId},${u.pmtId}\n`; });
+      unfilled.forEach(u=>{ csv += `${u.empId},${u.pmtId}\n`; });
       downloadCSV(csv, '未抽獎名單.csv');
     });
 
-    $('#export-consolation-btn').addEventListener('click', async () => {
+    document.querySelector('#export-consolation-btn')?.addEventListener('click', async ()=>{
       const s = await apiGetState();
-      const consolation = s.logs.filter(l => l.prize === "銘謝惠顧");
+      const consolation = s.logs.filter(l=>l.prize==="銘謝惠顧");
       let csv = "\uFEFF";
       csv += "未中獎員工工號 (銘謝惠顧)\n";
-      consolation.forEach(l => { csv += `${l.employeeId}\n`; });
+      consolation.forEach(l=>{ csv += `${l.employeeId}\n`; });
       downloadCSV(csv, '未中獎名單.csv');
     });
 
-    // 分頁 Tab
-    let confirmCallback = null;
-    confirmOkBtn.addEventListener('click', () => { if (confirmCallback) confirmCallback(); confirmModal.classList.add('hidden'); confirmCallback = null; });
-    confirmCancelBtn.addEventListener('click', () => { confirmModal.classList.add('hidden'); confirmCallback = null; });
-    function switchTab(tabName) {
-      state.activeTab = tabName;
-      $$('.tab-content').forEach(el => el.classList.add('hidden'));
-      $$('.tab-btn').forEach(el => { el.classList.remove('tab-active'); el.classList.add('tab-inactive'); });
-      $(`#tab-${tabName}`).classList.remove('hidden');
-      $(`[data-tab="${tabName}"]`).classList.add('tab-active');
-      $(`[data-tab="${tabName}"]`).classList.remove('tab-inactive');
-    }
-
-    // 初始化
-    async function initializeAppKV() {
-      const serverState = await apiGetState();
-      state = { ...state, ...serverState, spinning:false, angle:0, currentParticipant:null, activeTab:'prizes' };
+    // 初始化 -----------------------------------------------------------------
+    async function initialize(){
+      const s = await apiGetState();
+      state = { ...state, ...s, spinning:false, angle:0, currentParticipant:null, activeTab:'prizes' };
       loadingScreen.classList.add('hidden');
       updateUI();
     }
-    initializeAppKV();
+    initialize();
   });
   </script>
 </body>
 </html>
-Commit
