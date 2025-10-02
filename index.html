@@ -72,7 +72,7 @@
     </div>
 
     <!-- 確認 -->
-    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify中心 z-50 hidden">
       <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 m-4 text-center animate-fade-in-up max-w-sm">
         <h2 class="text-xl font-bold text-slate-200 mb-4">請確認</h2>
         <p id="confirm-message" class="text-slate-400 mb-6"></p>
@@ -84,7 +84,7 @@
     </div>
 
     <!-- 員工管理 -->
-    <div id="db-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div id="db-modal" class="fixed inset-0 bg黑 bg-opacity-70 flex items-center justify-center z-50 hidden">
       <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 m-4 w-full max-w-3xl flex flex-col max-h-[90vh]">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-2xl font-bold text-amber-400">管理員工名單</h2>
@@ -183,7 +183,7 @@
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const API_BASE = ''; // 同一 Pages 專案可留空
+    const API_BASE = ''; // 與同一 Pages 專案可留空
 
     // --- 預設資料（伺服器若尚未有 state 時使用） ---
     const DEFAULT_EMPLOYEES = [
@@ -217,7 +217,6 @@
       const res = await fetch(`${API_BASE}/api/state`, { cache: 'no-store' });
       if (!res.ok) throw new Error('無法讀取狀態');
       const data = await res.json();
-      // 首次無資料時，初始化到 KV
       if (!data || !data.prizes) {
         const initial = {
           prizes: DEFAULT_PRIZES.sort((a,b)=>a.id-b.id),
@@ -228,7 +227,6 @@
         await apiSaveState(initial);
         return initial;
       }
-      // 兼容：確保必備欄位
       return {
         prizes: (data.prizes || []).sort((a,b)=>a.id-b.id),
         logs: data.logs || [],
